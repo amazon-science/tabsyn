@@ -1,0 +1,14 @@
+{
+    "name": "beijing",
+    "task_type": "regression",
+    "header": "infer",
+    "column_names": null,
+    "num_col_idx": [5,6,7,9,10,11],
+    "cat_col_idx": [0,1,2,3,8],
+    "target_col_idx": [4],
+    "file_type": "csv",
+    "raw_data_path": "data/beijing/PRSA_data_2010.1.1-2014.12.31.csv",
+    "test_path": null,
+    "data_path": "data/beijing/beijing.csv"
+}
+
