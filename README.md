@@ -65,7 +65,7 @@ python main.py --dataname [NAME_OF_DATASET] --method [NAME_OF_BASELINE_METHODS] 
 ```
 
 Options of [NAME_OF_DATASET]: adult, default, shoppers, magic, beijing, news
-Options of [NAME_OF_BASELINE_METHODS]: ctgan, tvae, goggle, great, stasy, codi, tabddpm
+Options of [NAME_OF_BASELINE_METHODS]: goggle, great, stasy, codi, tabddpm
 
 For Tabsyn, use the following command for training:
 
@@ -93,7 +93,7 @@ python main.py --dataname [NAME_OF_DATASET] --method tabsyn --mode sample --save
 
 ```
 
-the default save path is "synthetic/[NAME_OF_DATASET]/[METHOD_NAME].csv"
+The default save path is "synthetic/[NAME_OF_DATASET]/[METHOD_NAME].csv"
 
 ## Evaluation
 
