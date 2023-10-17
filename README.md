@@ -109,7 +109,7 @@ Alpha Precision and Beta Recall:
 python eval/eval_quality.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
 ```
 
-Machine Learning Efficency:
+Machine Learning Efficiency:
 
 ```
 python eval/eval_mle.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
