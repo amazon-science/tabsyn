@@ -56,7 +56,7 @@ Process dataset:
 python process_dataset.py
 ```
 
-## Trainig Models
+## Training Models
 
 For baseline methods, use the following command for training:
 
