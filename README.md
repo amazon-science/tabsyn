@@ -1,4 +1,5 @@
-# Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space
+# Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space [[Paper link]](https://arxiv.org/pdf/2310.09656v1.pdf)
+
 
 ## Installing Dependencies
 
@@ -114,6 +115,7 @@ Machine Learning Efficiency:
 ```
 python eval/eval_mle.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
 ```
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
@@ -122,3 +124,14 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 
 This project is licensed under the Apache-2.0 License.
 
+
+## Reference
+We appreciate your citations if you find this repository useful to your research!
+```
+@article{zhang2023mixed,
+  title={Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space},
+  author={Zhang, Hengrui and Zhang, Jiani and Srinivasan, Balasubramaniam and Shen, Zhengyuan and Qin, Xiao and Faloutsos, Christos and Rangwala, Huzefa and Karypis, George},
+  journal={arXiv preprint arXiv:2310.09656},
+  year={2023}
+}
+```
