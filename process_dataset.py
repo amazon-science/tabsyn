@@ -335,5 +335,5 @@ def process_data(name):
 
 if __name__ == "__main__":
 
-    for name in ['adult', 'default', 'shoppers', 'magic', 'beijing', 'news']:    
+    for name in ['store', 'adult', 'default', 'shoppers', 'magic', 'beijing', 'news']:
         process_data(name)

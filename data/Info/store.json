@@ -1,0 +1,45 @@
+{
+    "name": "store",
+    "task_type": "binclass",
+    "header": 1,
+    "column_names": [
+        "StoreType",
+        "Assortment",
+        "CompetitionDistance",
+        "CompetitionOpenSinceMonth",
+        "CompetitionOpenSinceYear",
+        "Promo2",
+        "Promo2SinceWeek",
+        "Promo2SinceYear"
+    ],
+    "num_col_idx": [
+        2,
+        3,
+        4,
+        6,
+        7
+    ],
+    "cat_col_idx": [
+        0,
+        1,
+        5
+    ],
+    "target_col_idx": [
+        
+    ],
+    "file_type": "csv",
+    "data_path": "data/store/store.csv",
+    "test_path": null,
+    "column_info": {
+        "StoreType" : "str",
+        "Assortment" : "str",
+        "CompetitionDistance" : "int",
+        "CompetitionOpenSinceMonth" : "int",
+        "CompetitionOpenSinceYear" : "int",
+        "Promo2" : "int",
+        "Promo2SinceWeek" : "int",
+        "Promo2SinceYear" : "int"
+    },
+    "train_num": null,
+    "test_num": null
+}
