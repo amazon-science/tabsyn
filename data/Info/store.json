@@ -1,6 +1,6 @@
 {
     "name": "store",
-    "task_type": "binclass",
+    "task_type": null,
     "header": "infer",
     "column_names": null,
     "num_col_idx": [

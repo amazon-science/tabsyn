@@ -242,12 +242,18 @@ def process_data(name):
     
     X_num_train = train_df[num_columns].to_numpy().astype(np.float32)
     X_cat_train = train_df[cat_columns].to_numpy()
-    y_train = train_df[target_columns].to_numpy()
+    if target_columns:
+        y_train = train_df[target_columns].to_numpy()
+    else:
+        y_train = np.zeros((train_df.shape[0], 1))
 
 
     X_num_test = test_df[num_columns].to_numpy().astype(np.float32)
     X_cat_test = test_df[cat_columns].to_numpy()
-    y_test = test_df[target_columns].to_numpy()
+    if target_columns:
+        y_test = test_df[target_columns].to_numpy()
+    else:
+        y_test = np.zeros((test_df.shape[0], 1))
 
  
     save_dir = f'data/{name}'
