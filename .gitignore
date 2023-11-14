@@ -92,3 +92,5 @@ synthetic/
 tabsyn/vae/ckpt/
 data/
 !data/Info
+
+baselines/great/models/__pycache__
