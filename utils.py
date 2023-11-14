@@ -1,11 +1,11 @@
 from baselines.great.main import main as train_great
-from baselines.goggle.main import main as train_goggle
+#from baselines.goggle.main import main as train_goggle
 from baselines.codi.main import main as train_codi
 from baselines.stasy.main import main as train_stasy
 from baselines.tabddpm.main_train import main as train_tabddpm
 
 from baselines.great.sample import main as sample_great
-from baselines.goggle.sample import main as sample_goggle
+#from baselines.goggle.sample import main as sample_goggle
 from baselines.codi.sample import main as sample_codi
 from baselines.stasy.sample import main as sample_stasy
 from baselines.tabddpm.main_sample import main as sample_tabddpm
