@@ -90,6 +90,7 @@ target/
 # Folders
 synthetic/
 tabsyn/vae/ckpt/
+tabsyn/ckpt/
 data/
 !data/Info
 

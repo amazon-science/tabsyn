@@ -82,12 +82,19 @@ def split_num_cat_target(syn_data, info, num_inverse, cat_inverse):
     else:
         n_cat_feat += len(target_col_idx)
 
-  
-    pre_decoder = info['pre_decoder'].cuda()
+    
+    if torch.cuda.is_available():
+        pre_decoder = info['pre_decoder'].cuda()
+    else:
+        pre_decoder = info['pre_decoder'].cpu()
+
     token_dim = info['token_dim']
 
     syn_data = syn_data.reshape(syn_data.shape[0], -1, token_dim)
-    norm_input = pre_decoder(torch.tensor(syn_data).cuda())
+    if torch.cuda.is_available():
+        norm_input = pre_decoder(torch.tensor(syn_data).cuda())
+    else:
+        norm_input = pre_decoder(torch.tensor(syn_data).cpu())
     x_hat_num, x_hat_cat = norm_input
 
     syn_cat = []
