@@ -1,0 +1,32 @@
+{
+    "name": "sales",
+    "task_type": "binclass",
+    "header": "infer",
+    "column_names": null,
+    "num_col_idx": [
+        2
+    ],
+    "cat_col_idx": [
+        0,
+        1,
+        3,
+        4,
+        5
+    ],
+    "target_col_idx": [
+        
+    ],
+    "file_type": "csv",
+    "data_path": "data/sales/sales.csv",
+    "test_path": null,
+    "column_info": {
+        "Store" : "int",
+        "DayOfWeek" : "int",
+        "Date" : "int",
+        "Open" : "int",
+        "Promo" : "int",
+        "StateHoliday" : "int"
+    },
+    "train_num": null,
+    "test_num": null
+}
