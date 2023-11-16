@@ -140,6 +140,7 @@ def get_args():
     # configs for sampling
     parser.add_argument('--save_path', type=str, default=None, help='Path to save synthetic data.')
     parser.add_argument('--steps', type=int, default=50, help='NFEs.')
+    parser.add_argument('--no_samples', type=int, default=None, help='How many samples to sample')
     
     args = parser.parse_args()
 

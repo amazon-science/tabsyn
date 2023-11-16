@@ -33,7 +33,11 @@ def main(args):
     '''
     start_time = time.time()
 
-    num_samples = train_z.shape[0]
+    if args.no_samples == None:
+        num_samples = train_z.shape[0]
+    else:
+        num_samples = args.no_samples
+
     sample_dim = in_dim
 
     x_next = sample(model.denoise_fn_D, num_samples, sample_dim, device=device)
