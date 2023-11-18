@@ -117,7 +117,8 @@ def main(args):
     optimizer = torch.optim.Adam(model.parameters(), lr=LR, weight_decay=WD)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.95, patience=10, verbose=True)
 
-    num_epochs = 4000
+    num_epochs = args.vae_epochs
+
     best_train_loss = float('inf')
 
     current_lr = optimizer.param_groups[0]['lr']

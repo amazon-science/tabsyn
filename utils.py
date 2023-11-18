@@ -135,7 +135,10 @@ def get_args():
     parser.add_argument('--max_beta', type=float, default=1e-2, help='Maximum beta')
     parser.add_argument('--min_beta', type=float, default=1e-5, help='Minimum beta.')
     parser.add_argument('--lambd', type=float, default=0.7, help='Batch size.')
+    parser.add_argument('--vae_epochs', type=int, default=4000, help='Number of epochs during training.')
 
+    # configs for training TabSyn's diffusion moddel
+    parser.add_argument('--diff_epochs', type=int, default=10001, help='Number of epochs during training of diffusion model.')
 
     # configs for sampling
     parser.add_argument('--save_path', type=str, default=None, help='Path to save synthetic data.')
