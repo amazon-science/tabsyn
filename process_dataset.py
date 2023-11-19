@@ -162,8 +162,13 @@ def process_data(name):
     num_col_idx = info['num_col_idx']
     cat_col_idx = info['cat_col_idx']
     target_col_idx = info['target_col_idx']
+    id_col_idx = info.get('id_col_idx', None)
 
     idx_mapping, inverse_idx_mapping, idx_name_mapping = get_column_name_mapping(data_df, num_col_idx, cat_col_idx, target_col_idx, column_names)
+
+    # replace nans in categorical columns with '?'
+    for col_idx in cat_col_idx:
+        data_df.iloc[:, col_idx] = data_df.iloc[:, col_idx].fillna('?')
 
     num_columns = [column_names[i] for i in num_col_idx]
     cat_columns = [column_names[i] for i in cat_col_idx]
@@ -201,28 +206,33 @@ def process_data(name):
     print(name, train_df.shape, test_df.shape, data_df.shape)
 
     col_info = {}
-    
+
     for col_idx in num_col_idx:
         col_info[col_idx] = {}
-        col_info['type'] = 'numerical'
-        col_info['max'] = float(train_df[col_idx].max())
-        col_info['min'] = float(train_df[col_idx].min())
+        col_info[col_idx]['type'] = 'numerical'
+        col_info[col_idx]['subtype'] = info['column_info'][idx_name_mapping[col_idx]]
+        col_info[col_idx]['max'] = float(train_df[col_idx].max())
+        col_info[col_idx]['min'] = float(train_df[col_idx].min())
      
     for col_idx in cat_col_idx:
         col_info[col_idx] = {}
-        col_info['type'] = 'categorical'
-        col_info['categorizes'] = list(set(train_df[col_idx]))    
+        col_info[col_idx]['type'] = 'categorical'
+        col_info[col_idx]['subtype'] = info['column_info'][idx_name_mapping[col_idx]]
+        col_info[col_idx]['categorizes'] = list(set(train_df[col_idx]))    
 
     for col_idx in target_col_idx:
         if info['task_type'] == 'regression':
             col_info[col_idx] = {}
-            col_info['type'] = 'numerical'
-            col_info['max'] = float(train_df[col_idx].max())
-            col_info['min'] = float(train_df[col_idx].min())
+            col_info[col_idx]['type'] = 'numerical'
+            col_info[col_idx]['subtype'] = info['column_info'][idx_name_mapping[col_idx]]
+            col_info[col_idx]['max'] = float(train_df[col_idx].max())
+            col_info[col_idx]['min'] = float(train_df[col_idx].min())
         else:
             col_info[col_idx] = {}
-            col_info['type'] = 'categorical'
-            col_info['categorizes'] = list(set(train_df[col_idx]))      
+            col_info[col_idx]['type'] = 'categorical'
+            col_info[col_idx]['subtype'] = info['column_info'][idx_name_mapping[col_idx]]
+            col_info[col_idx]['categorizes'] = list(set(train_df[col_idx])) 
+
 
     info['column_info'] = col_info
 
@@ -264,6 +274,12 @@ def process_data(name):
     np.save(f'{save_dir}/X_num_test.npy', X_num_test)
     np.save(f'{save_dir}/X_cat_test.npy', X_cat_test)
     np.save(f'{save_dir}/y_test.npy', y_test)
+    
+    if id_col_idx is not None:
+        ids_train = train_df.pop(column_names[id_col_idx]).to_numpy()
+        ids_test = test_df.pop(column_names[id_col_idx]).to_numpy()
+        np.save(f'{save_dir}/ids_train.npy', ids_train)
+        np.save(f'{save_dir}/ids_test.npy', ids_test)
 
     train_df[num_columns] = train_df[num_columns].astype(np.float32)
     test_df[num_columns] = test_df[num_columns].astype(np.float32)
@@ -341,5 +357,5 @@ def process_data(name):
 
 if __name__ == "__main__":
 
-    for name in ['store', 'adult', 'default', 'shoppers', 'magic', 'beijing', 'news']:
+    for name in ['store', 'sales']:
         process_data(name)

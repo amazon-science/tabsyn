@@ -16,8 +16,9 @@ warnings.filterwarnings('ignore')
 
 def main(args): 
     device = args.device
+    is_cond = args.is_cond
 
-    train_z, _, _, ckpt_path, _ = get_input_train(args)
+    train_z, train_z_cond, _, _, ckpt_path, _ = get_input_train(args)
 
     print(ckpt_path)
 
@@ -25,13 +26,18 @@ def main(args):
         os.makedirs(ckpt_path)
 
     in_dim = train_z.shape[1] 
+    if is_cond:
+        in_dim_cond = train_z_cond.shape[1]
+    else:
+        in_dim_cond = None
 
     mean, std = train_z.mean(0), train_z.std(0)
 
     train_z = (train_z - mean) / 2
     train_data = train_z
 
-
+    if is_cond:
+        train_data = torch.cat([train_z, train_z_cond], dim = 1)
     batch_size = 4096
     train_loader = DataLoader(
         train_data,
@@ -40,15 +46,15 @@ def main(args):
         num_workers = 4,
     )
 
-    num_epochs = args.diff_epochs
+    num_epochs = args.epochs
 
-    denoise_fn = MLPDiffusion(in_dim, 1024).to(device)
+    denoise_fn = MLPDiffusion(in_dim, 1024, is_cond=is_cond, d_in_cond=in_dim_cond).to(device)
     print(denoise_fn)
 
     num_params = sum(p.numel() for p in denoise_fn.parameters())
     print("the number of parameters", num_params)
 
-    model = Model(denoise_fn = denoise_fn, hid_dim = train_z.shape[1]).to(device)
+    model = Model(denoise_fn = denoise_fn, hid_dim = train_z.shape[1], is_cond=is_cond).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=0)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.9, patience=20, verbose=True)

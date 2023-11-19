@@ -8,6 +8,7 @@ from tabsyn.vae.model import Decoder_model
 
 def get_input_train(args):
     dataname = args.dataname
+    is_cond = args.is_cond
 
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     dataset_dir = f'data/{dataname}'
@@ -17,6 +18,15 @@ def get_input_train(args):
 
     ckpt_dir = f'{curr_dir}/ckpt/{dataname}/'
     embedding_save_path = f'{curr_dir}/vae/ckpt/{dataname}/train_z.npy'
+    if is_cond:
+        cond_embedding_save_path = f'{dataset_dir}/cond_train_z.npy'
+        train_z_cond = torch.tensor(np.load(cond_embedding_save_path)).float()
+        train_z_cond = train_z_cond[:, 1:, :]
+        B, num_tokens, token_dim = train_z_cond.size()
+        in_dim = num_tokens * token_dim
+        train_z_cond = train_z_cond.view(B, in_dim)
+    else:
+        train_z_cond = None
     train_z = torch.tensor(np.load(embedding_save_path)).float()
 
     train_z = train_z[:, 1:, :]
@@ -25,11 +35,12 @@ def get_input_train(args):
     
     train_z = train_z.view(B, in_dim)
 
-    return train_z, curr_dir, dataset_dir, ckpt_dir, info
+    return train_z, train_z_cond, curr_dir, dataset_dir, ckpt_dir, info
 
 
 def get_input_generate(args):
     dataname = args.dataname
+    is_cond = args.is_cond
 
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     dataset_dir = f'data/{dataname}'
@@ -43,7 +54,7 @@ def get_input_generate(args):
 
     ckpt_dir = f'{curr_dir}/ckpt/{dataname}'
 
-    _, _, categories, d_numerical, num_inverse, cat_inverse = preprocess(dataset_dir, task_type = task_type, inverse = True)
+    _, _, categories, d_numerical, num_inverse, cat_inverse = preprocess(dataset_dir, task_type = task_type, inverse = True, concat=False)
 
     embedding_save_path = f'{curr_dir}/vae/ckpt/{dataname}/train_z.npy'
     train_z = torch.tensor(np.load(embedding_save_path)).float()
@@ -119,7 +130,8 @@ def split_num_cat_target(syn_data, info, num_inverse, cat_inverse):
     return syn_num, syn_cat, syn_target
 
 def recover_data(syn_num, syn_cat, syn_target, info):
-
+    if syn_target.shape[1] == 0:
+        syn_target = np.zeros((syn_num.shape[0], 1))
     num_col_idx = info['num_col_idx']
     cat_col_idx = info['cat_col_idx']
     target_col_idx = info['target_col_idx']
