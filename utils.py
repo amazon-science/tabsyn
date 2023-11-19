@@ -33,6 +33,7 @@ def get_args():
     parser.add_argument('--mode', type=str, default='train', help='Mode: train or sample.')
     parser.add_argument('--method', type=str, default='tabsyn', help='Method: tabsyn or baseline.')
     parser.add_argument('--gpu', type=int, default=0, help='GPU index.')
+    parser.add_argument('--is_cond', default=False, action='store_true', help='Whether to use conditional diffusion.')
 
 
     ''' configs for CTGAN '''
@@ -135,15 +136,12 @@ def get_args():
     parser.add_argument('--max_beta', type=float, default=1e-2, help='Maximum beta')
     parser.add_argument('--min_beta', type=float, default=1e-5, help='Minimum beta.')
     parser.add_argument('--lambd', type=float, default=0.7, help='Batch size.')
-    parser.add_argument('--vae_epochs', type=int, default=4000, help='Number of epochs during training.')
-
-    # configs for training TabSyn's diffusion moddel
-    parser.add_argument('--diff_epochs', type=int, default=10001, help='Number of epochs during training of diffusion model.')
 
     # configs for sampling
     parser.add_argument('--save_path', type=str, default=None, help='Path to save synthetic data.')
     parser.add_argument('--steps', type=int, default=50, help='NFEs.')
     parser.add_argument('--no_samples', type=int, default=None, help='How many samples to sample')
+    parser.add_argument('--cond_mode', type=str, default='train', help='Based on which embeddings to sample (train or test).')
     
     args = parser.parse_args()
 

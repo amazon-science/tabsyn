@@ -77,7 +77,7 @@ def main(args):
     encoder_save_path = f'{ckpt_dir}/encoder.pt'
     decoder_save_path = f'{ckpt_dir}/decoder.pt'
 
-    X_num, X_cat, categories, d_numerical = preprocess(data_dir, task_type = info['task_type'])
+    X_num, X_cat, categories, d_numerical = preprocess(data_dir, task_type = info['task_type'], concat=False)
 
     X_train_num, _ = X_num
     X_train_cat, _ = X_cat
@@ -117,7 +117,7 @@ def main(args):
     optimizer = torch.optim.Adam(model.parameters(), lr=LR, weight_decay=WD)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.95, patience=10, verbose=True)
 
-    num_epochs = args.vae_epochs
+    num_epochs = args.epochs
 
     best_train_loss = float('inf')
 

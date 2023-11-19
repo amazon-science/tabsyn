@@ -19,7 +19,7 @@ S_min=0
 S_max=float('inf')
 S_noise=1
 
-def sample(net, num_samples, dim, num_steps = 50, device = 'cuda:0'):
+def sample(net, num_samples, dim, num_steps = 50, device = 'cuda:0', z_cond=None):
     latents = torch.randn([num_samples, dim], device=device)
 
     step_indices = torch.arange(num_steps, dtype=torch.float32, device=latents.device)
@@ -35,12 +35,11 @@ def sample(net, num_samples, dim, num_steps = 50, device = 'cuda:0'):
 
     with torch.no_grad():
         for i, (t_cur, t_next) in enumerate(zip(t_steps[:-1], t_steps[1:])):
-            x_next = sample_step(net, num_steps, i, t_cur, t_next, x_next)
+            x_next = sample_step(net, num_steps, i, t_cur, t_next, x_next, z_cond=z_cond)
 
     return x_next
 
-def sample_step(net, num_steps, i, t_cur, t_next, x_next):
-
+def sample_step(net, num_steps, i, t_cur, t_next, x_next, z_cond=None):
     x_cur = x_next
     # Increase noise temporarily.
     gamma = min(S_churn / num_steps, np.sqrt(2) - 1) if S_min <= t_cur <= S_max else 0
@@ -48,13 +47,13 @@ def sample_step(net, num_steps, i, t_cur, t_next, x_next):
     x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * randn_like(x_cur)
     # Euler step.
 
-    denoised = net(x_hat, t_hat).to(torch.float32)
+    denoised = net(x_hat, t_hat, z_cond=z_cond).to(torch.float32)
     d_cur = (x_hat - denoised) / t_hat
     x_next = x_hat + (t_next - t_hat) * d_cur
 
     # Apply 2nd order correction.
     if i < num_steps - 1:
-        denoised = net(x_next, t_next).to(torch.float32)
+        denoised = net(x_next, t_next, z_cond=z_cond).to(torch.float32)
         d_prime = (x_next - denoised) / t_next
         x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
 
@@ -149,7 +148,7 @@ class EDMLoss:
         self.opts = opts
 
 
-    def __call__(self, denoise_fn, data):
+    def __call__(self, denoise_fn, data, z_cond=None):
 
         rnd_normal = torch.randn(data.shape[0], device=data.device)
         sigma = (rnd_normal * self.P_std + self.P_mean).exp()
@@ -158,7 +157,7 @@ class EDMLoss:
 
         y = data
         n = torch.randn_like(y) * sigma.unsqueeze(1)
-        D_yn = denoise_fn(y + n, sigma)
+        D_yn = denoise_fn(y + n, sigma, z_cond=z_cond)
     
         target = y
         loss = weight.unsqueeze(1) * ((D_yn - target) ** 2)
