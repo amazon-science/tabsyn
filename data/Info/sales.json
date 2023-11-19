@@ -3,12 +3,14 @@
     "task_type": "binclass",
     "header": "infer",
     "column_names": null,
+    "id_col_idx": 6,
+    "parent_name": "store",
     "num_col_idx": [
-        2
+        0
     ],
     "cat_col_idx": [
-        0,
         1,
+        2,
         3,
         4,
         5
@@ -20,12 +22,14 @@
     "data_path": "data/sales/sales.csv",
     "test_path": null,
     "column_info": {
+        "Id" : "int",
         "Store" : "int",
         "DayOfWeek" : "int",
         "Date" : "int",
         "Open" : "int",
         "Promo" : "int",
-        "StateHoliday" : "int"
+        "StateHoliday" : "str",
+        "SchoolHoliday" : "int"
     },
     "train_num": null,
     "test_num": null
