@@ -92,6 +92,9 @@ synthetic/
 tabsyn/vae/ckpt/
 tabsyn/ckpt/
 data/
-!data/Info
+!data/Info¸
+eval/density
+eval/quality
+workspace
 
 baselines/great/models/__pycache__
