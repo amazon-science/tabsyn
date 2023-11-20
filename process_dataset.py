@@ -65,6 +65,54 @@ def preprocess_news():
     with open(f'{INFO_PATH}/{name}.json', 'w') as file:
         json.dump(info, file, indent=4)
 
+def preprocess_store():
+    with open(f'{INFO_PATH}/store.json', 'r') as f:
+        info = json.load(f)
+
+    id_col_name = info['id_col_name']
+    data_path = info['raw_data_path']
+    cat_col_idx = info['cat_col_idx']
+    data_df = pd.read_csv(data_path)
+
+    # replace nans in categorical columns with '?'
+    for col_idx in cat_col_idx:
+        data_df.iloc[:, col_idx] = data_df.iloc[:, col_idx].fillna('?')
+        
+    
+    ids_test = data_df.pop(id_col_name).to_numpy()
+    np.save(f'data/store/ids_test.npy', ids_test)
+
+    data_df.to_csv(f'data/store/test.csv', index = False)
+
+def preprocess_sales():
+    with open(f'{INFO_PATH}/sales.json', 'r') as f:
+        info = json.load(f)
+    
+    id_col_name = info['id_col_name']
+    fk_col_name = info['fk_col_name']
+    data_path = info['raw_data_path']
+    cat_col_idx = info['cat_col_idx']
+    train_data_path = info['data_path']
+    data_df = pd.read_csv(data_path)
+
+    # replace nans in categorical columns with '?'
+    for col_idx in cat_col_idx:
+        data_df.iloc[:, col_idx] = data_df.iloc[:, col_idx].fillna('?')
+
+    # convert Date column to int
+    data_df['Date'] = (pd.to_datetime(data_df['Date']).astype('int64') / 100000000000).astype('int64')
+    train_data = pd.read_csv(train_data_path)
+    if train_data['Date'].dtype == 'object':
+        train_data['Date'] = (pd.to_datetime(train_data['Date']).astype('int64') /  100000000000).astype('int64')
+    train_data.to_csv(train_data_path, index = False)
+
+    ids_test = data_df.pop(id_col_name).to_numpy()
+    fks_test = data_df.pop(fk_col_name).to_numpy()
+    np.save(f'data/sales/ids_test.npy', ids_test)
+    np.save(f'data/sales/fks_test.npy', fks_test)
+
+    data_df.to_csv(f'data/sales/test.csv', index = False)
+
 
 def get_column_name_mapping(data_df, num_col_idx, cat_col_idx, target_col_idx, column_names = None):
     
@@ -143,6 +191,10 @@ def process_data(name):
         preprocess_news()
     elif name == 'beijing':
         preprocess_beijing()
+    elif name == 'store':
+        preprocess_store()
+    elif name == 'sales':
+        preprocess_sales()
 
     with open(f'{INFO_PATH}/{name}.json', 'r') as f:
         info = json.load(f)
@@ -164,9 +216,17 @@ def process_data(name):
     num_col_idx = info['num_col_idx']
     cat_col_idx = info['cat_col_idx']
     target_col_idx = info['target_col_idx']
-    id_col_idx = info.get('id_col_idx', None)
+    id_col_name = info.get('id_col_name', None)
+    save_dir = f'data/{name}'
+
     if is_cond:
-        fk_col_idx = info['fk_col_idx']
+        fk_col_name = info['fk_col_name']
+        fk_train = data_df.pop(fk_col_name).to_numpy()
+        np.save(f'{save_dir}/fk_train.npy', fk_train)
+
+    if id_col_name is not None:
+        ids_train = data_df.pop(id_col_name).to_numpy()
+        np.save(f'{save_dir}/ids_train.npy', ids_train)
 
     idx_mapping, inverse_idx_mapping, idx_name_mapping = get_column_name_mapping(data_df, num_col_idx, cat_col_idx, target_col_idx, column_names)
 
@@ -180,19 +240,9 @@ def process_data(name):
 
     if info['test_path']:
 
-        # if testing data is given
-        test_path = info['test_path']
-
-        with open(test_path, 'r') as f:
-            lines = f.readlines()[1:]
-            test_save_path = f'data/{name}/test.data'
-            if not os.path.exists(test_save_path):
-                with open(test_save_path, 'a') as f1:     
-                    for line in lines:
-                        save_line = line.strip('\n').strip('.')
-                        f1.write(f'{save_line}\n')
-
-        test_df = pd.read_csv(test_save_path, header = None)
+        test_df = pd.read_csv(info['test_path'], header = info['header'])
+        
+            
         train_df = data_df
 
     else:  
@@ -246,10 +296,12 @@ def process_data(name):
     for col in num_columns:
         train_df.loc[train_df[col] == '?', col] = np.nan
     for col in cat_columns:
+        train_df[col] = train_df[col].astype(str)
         train_df.loc[train_df[col] == '?', col] = 'nan'
     for col in num_columns:
         test_df.loc[test_df[col] == '?', col] = np.nan
     for col in cat_columns:
+        test_df[col] = test_df[col].astype(str)
         test_df.loc[test_df[col] == '?', col] = 'nan'
 
 
@@ -270,7 +322,6 @@ def process_data(name):
         y_test = np.zeros((test_df.shape[0], 1))
 
  
-    save_dir = f'data/{name}'
     np.save(f'{save_dir}/X_num_train.npy', X_num_train)
     np.save(f'{save_dir}/X_cat_train.npy', X_cat_train)
     np.save(f'{save_dir}/y_train.npy', y_train)
@@ -278,18 +329,6 @@ def process_data(name):
     np.save(f'{save_dir}/X_num_test.npy', X_num_test)
     np.save(f'{save_dir}/X_cat_test.npy', X_cat_test)
     np.save(f'{save_dir}/y_test.npy', y_test)
-    
-    if id_col_idx is not None:
-        ids_train = train_df.pop(column_names[id_col_idx]).to_numpy()
-        ids_test = test_df.pop(column_names[id_col_idx]).to_numpy()
-        np.save(f'{save_dir}/ids_train.npy', ids_train)
-        np.save(f'{save_dir}/ids_test.npy', ids_test)
-
-    if is_cond:
-        fk_train = train_df.pop(column_names[fk_col_idx]).to_numpy()
-        fk_test = test_df.pop(column_names[fk_col_idx]).to_numpy()
-        np.save(f'{save_dir}/fk_train.npy', fk_train)
-        np.save(f'{save_dir}/fk_test.npy', fk_test)
 
     train_df[num_columns] = train_df[num_columns].astype(np.float32)
     test_df[num_columns] = test_df[num_columns].astype(np.float32)

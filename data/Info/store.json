@@ -22,8 +22,9 @@
     "target_col_idx": [
     ],
     "file_type": "csv",
-    "data_path": "data/store/ordered.csv",
-    "test_path": null,
+    "data_path": "data/store/store_train.csv",
+    "raw_data_path": "data/store/store_test.csv",
+    "test_path": "data/store/test.csv",
     "column_info": {
         "Store" : "int",
         "StoreType" : "str",
