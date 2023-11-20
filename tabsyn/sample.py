@@ -73,6 +73,14 @@ def main(args):
     for col in syn_df.columns:
         syn_df[col] = syn_df[col].astype(info['column_info'][str(col)]['subtype'])
     syn_df.rename(columns = idx_name_mapping, inplace=True)
+    
+    # add fk column if conditional
+    if is_cond:
+        fks = np.load(f'{curr_dir}/ckpt/{dataname}/{cond_mode}_cond_fks.npy')
+        syn_df.insert(info['fk_col_idx'], info['fk_col_name'], fks)
+    # add id column
+    syn_df.insert(info['id_col_idx'], info['id_col_name'], range(0, len(syn_df))) 
+    
     syn_df.to_csv(save_path, index = False)
     
     end_time = time.time()

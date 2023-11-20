@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 
 import src
-from tabsyn.vae.model import Model_VAE, Encoder_model, Decoder_model
-from utils_train import TabularDataset, preprocess
+from tabsyn.vae.model import Encoder_model
+
 
 '''
 Based on the generated parent data generate the conditional embeddings for the children (VAE embeddings)
@@ -50,9 +50,6 @@ X_num_train = df_train[num_columns].to_numpy().astype(np.float32)
 X_cat_train = df_train_cat.to_numpy()
 X_num_test = df_test[num_columns].to_numpy().astype(np.float32)
 X_cat_test = df_test_cat.to_numpy()
-
-print(df_train_cat.isna().sum())
-print(df_test_cat.isna().sum(   ))
 
 
 X_cat = {'train': X_cat_train, 'test': X_cat_test}
@@ -101,10 +98,17 @@ with torch.no_grad():
     train_z = pre_encoder(X_train_num, X_train_cat).detach().cpu().numpy()
     test_z = pre_encoder(X_test_num, X_test_cat).detach().cpu().numpy()
 
-    # repeat each row 10 times
-    train_z = np.repeat(train_z, 48, axis=0)
-    test_z = np.repeat(test_z, 48, axis=0)
+# load parent foreign keys
+fks_train = df_train[info['id_col_name']].to_numpy()
+fks_test = df_test[info['id_col_name']].to_numpy()
+# repeat each row 10 times
+train_z = np.repeat(train_z, 48, axis=0)
+test_z = np.repeat(test_z, 48, axis=0)
+fks_train = np.repeat(fks_train, 48, axis=0)
+fks_test = np.repeat(fks_test, 48, axis=0)
 
-    # save test embeddings
-    np.save(f'tabsyn/ckpt/{dataname}/train_cond_z.npy', train_z)
-    np.save(f'tabsyn/ckpt/{dataname}/test_cond_z.npy', test_z)
+# save test embeddings
+np.save(f'tabsyn/ckpt/{dataname}/train_cond_z.npy', train_z)
+np.save(f'tabsyn/ckpt/{dataname}/test_cond_z.npy', test_z)
+np.save(f'tabsyn/ckpt/{dataname}/train_cond_fks.npy', fks_train)
+np.save(f'tabsyn/ckpt/{dataname}/test_cond_fks.npy', fks_test)

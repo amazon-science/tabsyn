@@ -147,6 +147,8 @@ def process_data(name):
     with open(f'{INFO_PATH}/{name}.json', 'r') as f:
         info = json.load(f)
 
+    is_cond = info.get('is_cond', False)
+
     data_path = info['data_path']
     if info['file_type'] == 'csv':
         data_df = pd.read_csv(data_path, header = info['header'])
@@ -163,6 +165,8 @@ def process_data(name):
     cat_col_idx = info['cat_col_idx']
     target_col_idx = info['target_col_idx']
     id_col_idx = info.get('id_col_idx', None)
+    if is_cond:
+        fk_col_idx = info['fk_col_idx']
 
     idx_mapping, inverse_idx_mapping, idx_name_mapping = get_column_name_mapping(data_df, num_col_idx, cat_col_idx, target_col_idx, column_names)
 
@@ -280,6 +284,12 @@ def process_data(name):
         ids_test = test_df.pop(column_names[id_col_idx]).to_numpy()
         np.save(f'{save_dir}/ids_train.npy', ids_train)
         np.save(f'{save_dir}/ids_test.npy', ids_test)
+
+    if is_cond:
+        fk_train = train_df.pop(column_names[fk_col_idx]).to_numpy()
+        fk_test = test_df.pop(column_names[fk_col_idx]).to_numpy()
+        np.save(f'{save_dir}/fk_train.npy', fk_train)
+        np.save(f'{save_dir}/fk_test.npy', fk_test)
 
     train_df[num_columns] = train_df[num_columns].astype(np.float32)
     test_df[num_columns] = test_df[num_columns].astype(np.float32)

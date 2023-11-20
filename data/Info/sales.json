@@ -3,7 +3,11 @@
     "task_type": "binclass",
     "header": "infer",
     "column_names": null,
-    "id_col_idx": 6,
+    "is_cond": true,
+    "id_col_idx": 7,
+    "fk_col_idx": 6,
+    "id_col_name": "Id",
+    "fk_col_name": "Store",
     "parent_name": "store",
     "num_col_idx": [
         0

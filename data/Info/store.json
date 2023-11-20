@@ -3,7 +3,9 @@
     "task_type": "binclass",
     "header": "infer",
     "column_names": null,
+    "is_cond": false,
     "id_col_idx": 9,
+    "id_col_name": "Store",
     "num_col_idx": [
         0,
         1,
