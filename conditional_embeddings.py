@@ -22,11 +22,11 @@ def load_parent_embeddings(info):
 
 
 def save_cond_embeddings(name, info, mode='train'):
-    ids = np.load(f'data/{name}/ids_{mode}.npy')
+    fks = np.load(f'data/{name}/fks_{mode}.npy')
     
     parent_ids, parent_embeddings = load_parent_embeddings(info)
-    cond_embeddings = np.zeros((len(ids), parent_embeddings.shape[1], parent_embeddings.shape[2]))
-    for i, id in enumerate(ids):
+    cond_embeddings = np.zeros((len(fks), parent_embeddings.shape[1], parent_embeddings.shape[2]))
+    for i, id in enumerate(fks):
         parent_id = parent_ids.index(id)
         cond_embeddings[i] = parent_embeddings[parent_id]
     

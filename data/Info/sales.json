@@ -30,7 +30,7 @@
         "Id" : "int",
         "Store" : "int",
         "DayOfWeek" : "int",
-        "Date" : "int",
+        "Date" : "date",
         "Open" : "int",
         "Promo" : "int",
         "StateHoliday" : "str",

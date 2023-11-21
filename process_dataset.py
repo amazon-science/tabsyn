@@ -222,7 +222,7 @@ def process_data(name):
     if is_cond:
         fk_col_name = info['fk_col_name']
         fk_train = data_df.pop(fk_col_name).to_numpy()
-        np.save(f'{save_dir}/fk_train.npy', fk_train)
+        np.save(f'{save_dir}/fks_train.npy', fk_train)
 
     if id_col_name is not None:
         ids_train = data_df.pop(id_col_name).to_numpy()

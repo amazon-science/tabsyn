@@ -29,6 +29,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Pipeline')
 
     # General configs
+    parser.add_argument('-e', '--epochs', default=4000, type=int, help='Number of training epochs')
     parser.add_argument('--dataname', type=str, default='adult', help='Name of dataset.')
     parser.add_argument('--mode', type=str, default='train', help='Mode: train or sample.')
     parser.add_argument('--method', type=str, default='tabsyn', help='Method: tabsyn or baseline.')
@@ -38,8 +39,6 @@ def get_args():
 
     ''' configs for CTGAN '''
 
-    parser.add_argument('-e', '--epochs', default=1000, type=int,
-                        help='Number of training epochs')
     parser.add_argument('--no-header', dest='header', action='store_false',
                         help='The CSV file has no header. Discrete columns will be indices.')
 

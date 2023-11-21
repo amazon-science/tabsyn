@@ -66,9 +66,9 @@ def main(args):
             pre_decoder.load_weights(model)
             torch.save(pre_encoder.state_dict(), f'tabsyn/vae/ckpt/{dataname}/encoder.pt')
             torch.save(pre_decoder.state_dict(), f'tabsyn/vae/ckpt/{dataname}/decoder.pt')
+            print('Successfully saved the encoder and decoder!')
 
         
-
         print('Successfully loaded the model!')
 
         train_z = pre_encoder(X_train_num, X_train_cat).detach().cpu().numpy()

@@ -5,6 +5,7 @@ import time
 
 import torch
 import numpy as np
+import pandas as pd
 
 from tabsyn.model import MLPDiffusion, Model
 from tabsyn.latent_utils import get_input_generate, recover_data, split_num_cat_target
@@ -71,7 +72,11 @@ def main(args):
 
     # convert data type
     for col in syn_df.columns:
-        syn_df[col] = syn_df[col].astype(info['column_info'][str(col)]['subtype'])
+        datatype = info['column_info'][str(col)]['subtype']
+        if datatype == 'date':
+            syn_df[col] = pd.to_datetime(syn_df[col].astype('int64') * 100000000000).dt.date
+            continue
+        syn_df[col] = syn_df[col].astype(datatype)
     syn_df.rename(columns = idx_name_mapping, inplace=True)
     
     # add fk column if conditional
