@@ -23,9 +23,9 @@
         
     ],
     "file_type": "csv",
-    "data_path": "data/sales/test_train.csv",
-    "raw_data_path": "data/sales/test_test.csv",
-    "test_path": "data/sales/test.csv",
+    "data_path": "data/test/test_train.csv",
+    "raw_data_path": "data/test/test_test.csv",
+    "test_path": "data/test/test.csv",
     "column_info": {
         "Id" : "int",
         "Store" : "int",

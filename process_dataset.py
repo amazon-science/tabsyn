@@ -100,10 +100,12 @@ def preprocess_test():
         data_df.iloc[:, col_idx] = data_df.iloc[:, col_idx].fillna('?')
 
     # convert Date column to int
-    data_df['Date'] = (pd.to_datetime(data_df['Date']).astype('int64') / 100000000000).astype('int64')
+    # data_df['Date'] = (pd.to_datetime(data_df['Date']).astype('int64') / 100000000000).astype('int64')
+    data_df['Date'] = pd.to_numeric(pd.to_datetime(data_df['Date']))
     train_data = pd.read_csv(train_data_path)
     if train_data['Date'].dtype == 'object':
-        train_data['Date'] = (pd.to_datetime(train_data['Date']).astype('int64') /  100000000000).astype('int64')
+        #train_data['Date'] = (pd.to_datetime(train_data['Date']).astype('int64') /  100000000000).astype('int64')
+        train_data['Date'] =  pd.to_numeric(pd.to_datetime(train_data['Date']))
     train_data.to_csv(train_data_path, index = False)
 
     ids_test = data_df.pop(id_col_name).to_numpy()
