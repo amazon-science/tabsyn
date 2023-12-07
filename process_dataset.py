@@ -84,8 +84,8 @@ def preprocess_store():
 
     data_df.to_csv(f'data/store/test.csv', index = False)
 
-def preprocess_sales():
-    with open(f'{INFO_PATH}/sales.json', 'r') as f:
+def preprocess_test():
+    with open(f'{INFO_PATH}/test.json', 'r') as f:
         info = json.load(f)
     
     id_col_name = info['id_col_name']
@@ -108,10 +108,10 @@ def preprocess_sales():
 
     ids_test = data_df.pop(id_col_name).to_numpy()
     fks_test = data_df.pop(fk_col_name).to_numpy()
-    np.save(f'data/sales/ids_test.npy', ids_test)
-    np.save(f'data/sales/fks_test.npy', fks_test)
+    np.save(f'data/test/ids_test.npy', ids_test)
+    np.save(f'data/test/fks_test.npy', fks_test)
 
-    data_df.to_csv(f'data/sales/test.csv', index = False)
+    data_df.to_csv(f'data/test/test.csv', index = False)
 
 
 def get_column_name_mapping(data_df, num_col_idx, cat_col_idx, target_col_idx, column_names = None):
@@ -193,8 +193,8 @@ def process_data(name):
         preprocess_beijing()
     elif name == 'store':
         preprocess_store()
-    elif name == 'sales':
-        preprocess_sales()
+    elif name == 'test':
+        preprocess_test()
 
     with open(f'{INFO_PATH}/{name}.json', 'r') as f:
         info = json.load(f)
@@ -406,5 +406,5 @@ def process_data(name):
 
 if __name__ == "__main__":
 
-    for name in ['store', 'sales']:
+    for name in ['store', 'test']:
         process_data(name)
