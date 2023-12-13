@@ -82,7 +82,97 @@ def preprocess_store():
     ids_test = data_df.pop(id_col_name).to_numpy()
     np.save(f'data/store/ids_test.npy', ids_test)
 
-    data_df.to_csv(f'data/store/test.csv', index = False)
+    data_df.to_csv(info['test_path'], index = False)
+
+def preprocess_molecule():
+    with open(f'{INFO_PATH}/molecule.json', 'r') as f:
+        info = json.load(f)
+    
+    id_col_name = info['id_col_name']
+    data_path = info['raw_data_path']
+    cat_col_idx = info['cat_col_idx']
+    train_data_path = info['data_path']
+    data_df = pd.read_csv(data_path)
+
+    # replace nans in categorical columns with '?'
+    for col_idx in cat_col_idx:
+        data_df.iloc[:, col_idx] = data_df.iloc[:, col_idx].fillna('?')
+
+    train_data = pd.read_csv(train_data_path)
+
+    train_data.to_csv(train_data_path, index = False)
+
+    ids_test = data_df.pop(id_col_name).to_numpy()
+    np.save(f'data/molecule/ids_test.npy', ids_test)
+
+    data_df.to_csv(f'data/molecule/test.csv', index = False)
+
+def preprocess_atom():
+    with open(f'{INFO_PATH}/atom.json', 'r') as f:
+        info = json.load(f)
+    
+    id_col_name = info['id_col_name']
+    fk_col_name = info['fk_col_name']
+    data_path = info['raw_data_path']
+    cat_col_idx = info['cat_col_idx']
+    train_data_path = info['data_path']
+    data_df = pd.read_csv(data_path)
+
+    # replace nans in categorical columns with '?'
+    for col_idx in cat_col_idx:
+        data_df.iloc[:, col_idx] = data_df.iloc[:, col_idx].fillna('?')
+
+    train_data = pd.read_csv(train_data_path)
+
+    train_data.to_csv(train_data_path, index = False)
+
+    ids_test = data_df.pop(id_col_name).to_numpy()
+    fks_test = data_df.pop(fk_col_name).to_numpy()
+    np.save(f'data/atom/ids_test.npy', ids_test)
+    np.save(f'data/atom/fks_test.npy', fks_test)
+
+    data_df.to_csv(f'data/atom/test.csv', index = False)
+
+def preprocess_bond(reorder=False):
+    with open(f'{INFO_PATH}/bond.json', 'r') as f:
+        info = json.load(f)
+    
+    id_col_name = info['id_col_name']
+    fk_col_name = info['fk_col_name']
+    data_path = info['raw_data_path']
+    cat_col_idx = info['cat_col_idx']
+    train_data_path = info['data_path']
+
+    data_df_unordered = pd.read_csv(data_path)
+
+    if reorder:
+        # TODO: couple with info files
+        # reorder dataset to put id as the last column
+        data_df = reorder_columns(data_df_unordered, info["id_col_idx"])
+    else:
+        data_df = data_df_unordered
+
+    # replace nans in categorical columns with '?'
+    for col_idx in cat_col_idx:
+        data_df.iloc[:, col_idx] = data_df.iloc[:, col_idx].fillna('?')
+
+    train_data = pd.read_csv(train_data_path)
+
+    train_data.to_csv(train_data_path, index = False)
+
+    ids_test = data_df.pop(id_col_name).to_numpy()
+    # fks_test = data_df.pop(fk_col_name).to_numpy()
+    np.save(f'data/{info["name"]}/ids_test.npy', ids_test)
+    # np.save(f'data/{info["name"]}/fks_test.npy', fks_test)
+
+    data_df.to_csv(info['test_path'], index = False)
+
+def reorder_columns(df, index_id):
+    cols = list(df.columns.values)
+    index_col = cols.pop(index_id)
+    cols = cols.append(index_col)
+    
+    return df.reindex(columns=cols)
 
 def preprocess_test():
     with open(f'{INFO_PATH}/test.json', 'r') as f:
@@ -186,6 +276,31 @@ def train_val_test_split(data_df, cat_columns, num_train = 0, num_test = 0):
         
     return train_df, test_df, seed    
 
+def reindex(cat, num):
+    # make lists
+    list_cat = np.array([[i, "cat"] for i in cat])
+    list_num = np.array([[i, "num"] for i in num])
+    if list_cat.size == 0:
+        list_ = list_num
+    elif list_num.size == 0:
+        list_ = list_cat
+    else:
+        list_ = np.vstack((list_cat, list_num))
+    # order by first element
+    list_ = sorted(list_, key=lambda x: x[0])
+    # collapse
+    arr = np.array(list_)
+    sorted_indices = np.argsort(arr[:, 0])
+    transformed_arr = np.argsort(sorted_indices)
+    arr[:, 0] = transformed_arr
+    # make new cat and num
+    cat_indices = np.where(arr[:, 1] == 'cat')[0]
+    num_indices = np.where(arr[:, 1] == 'num')[0]
+    # cast to int
+    cat_indices = [int(x) for x in cat_indices]
+    num_indices = [int(x) for x in num_indices]
+
+    return cat_indices, num_indices
 
 def process_data(name):
 
@@ -197,11 +312,19 @@ def process_data(name):
         preprocess_store()
     elif name == 'test':
         preprocess_test()
+    elif name == 'bond':
+        preprocess_bond()
+    elif name == 'atom':
+        preprocess_atom()
+    elif name == 'molecule':
+        preprocess_molecule()
 
     with open(f'{INFO_PATH}/{name}.json', 'r') as f:
         info = json.load(f)
 
     is_cond = info.get('is_cond', False)
+
+    info['cat_col_idx'], info['num_col_idx'] = reindex(info['cat_col_idx'], info['num_col_idx'])
 
     data_path = info['data_path']
     if info['file_type'] == 'csv':
@@ -408,5 +531,5 @@ def process_data(name):
 
 if __name__ == "__main__":
 
-    for name in ['store', 'test']:
+    for name in ['molecule', 'atom', 'bond', 'store', 'test']:
         process_data(name)
