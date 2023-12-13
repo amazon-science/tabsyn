@@ -1,0 +1,36 @@
+{
+    "name": "molecule",
+    "task_type": "binclass",
+    "header": "infer",
+    "column_names": null,
+    "is_cond": false,
+    "id_col_idx": 0,
+    "id_col_name": "molecule_id",
+    "parent_name": null,
+    "num_col_idx": [
+        3,
+        4
+    ],
+    "cat_col_idx": [
+        0,
+        1,
+        2,
+        5
+    ],
+    "target_col_idx": [
+    ],
+    "file_type": "csv",
+    "data_path": "data/molecule/molecule_train.csv",
+    "raw_data_path": "data/molecule/molecule_test.csv",
+    "test_path": "data/molecule/test.csv",
+    "column_info": {
+        "molecule_id" : "str",
+        "ind1" : "int",
+        "inda" : "int",
+        "logp" : "float",
+        "lumo" : "float",
+        "mutagenic" : "str"
+    },
+    "train_num": null,
+    "test_num": null
+}

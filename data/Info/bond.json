@@ -1,0 +1,33 @@
+{
+    "name": "bond",
+    "task_type": "binclass",
+    "header": "infer",
+    "column_names": null,
+    "is_cond": true,
+    "id_col_idx": 0,
+    "id_col_name": "bond_id",
+    "fk_col_name": ["atom1_id", "atom2_id"],
+    "fk_col_idx": [0, 1],
+    "parent_name": "atom",
+    "num_col_idx": [],
+    "cat_col_idx": [
+        0,
+        1,
+        2,
+        3
+    ],
+    "target_col_idx": [
+    ],
+    "file_type": "csv",
+    "data_path": "data/bond/bond_train.csv",
+    "raw_data_path": "data/bond/bond_test.csv",
+    "test_path": "data/bond/test.csv",
+    "column_info": {
+        "atom1_id" : "str",
+        "atom2_id" : "str",
+        "type" : "int",
+        "bond_id" : "str"
+    },
+    "train_num": null,
+    "test_num": null
+}

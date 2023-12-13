@@ -1,0 +1,36 @@
+{
+    "name": "atom",
+    "task_type": "binclass",
+    "header": "infer",
+    "column_names": null,
+    "is_cond": true,
+    "id_col_idx": 0,
+    "id_col_name": "atom_id",
+    "fk_col_name": "molecule_id",
+    "fk_col_idx": 1,
+    "parent_name": "molecule",
+    "num_col_idx": [
+        4
+    ],
+    "cat_col_idx": [
+        0,
+        1,
+        2,
+        3
+    ],
+    "target_col_idx": [
+    ],
+    "file_type": "csv",
+    "data_path": "data/atom/atom_train.csv",
+    "raw_data_path": "data/atom/atom_test.csv",
+    "test_path": "data/atom/test.csv",
+    "column_info": {
+        "atom_id" : "str",
+        "molecule_id" : "str",
+        "element" : "str",
+        "type" : "int",
+        "charge" : "float"
+    },
+    "train_num": null,
+    "test_num": null
+}
