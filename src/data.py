@@ -212,6 +212,15 @@ def normalize(
     X: ArrayDict, normalization: Normalization, seed: Optional[int], return_normalizer : bool = False
 ) -> ArrayDict:
     X_train = X['train']
+
+    if X_train.size == 0:
+        if return_normalizer:
+            from sklearn.preprocessing import FunctionTransformer
+            identity = lambda x: x
+            normalizer = FunctionTransformer(func=identity, inverse_func=identity)
+            return {k: v for k, v in X.items()}, normalizer
+        return {k: v for k, v in X.items()}
+
     if normalization == 'standard':
         normalizer = sklearn.preprocessing.StandardScaler()
     elif normalization == 'minmax':
