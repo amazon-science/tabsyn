@@ -147,7 +147,12 @@ def main(args):
         
             loss_mse, loss_ce, loss_kld, train_acc = compute_loss(batch_num, batch_cat, Recon_X_num, Recon_X_cat, mu_z, std_z)
 
-            loss = loss_mse + loss_ce + beta * loss_kld
+            if loss_mse != loss_mse:
+                loss = loss_ce + beta * loss_kld
+            elif loss_ce != loss_ce:
+                loss = loss_mse + beta * loss_kld
+            else:
+                loss = loss_mse + loss_ce + beta * loss_kld
             loss.backward()
             optimizer.step()
 
