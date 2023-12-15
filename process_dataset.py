@@ -98,8 +98,8 @@ def preprocess_molecule():
     for col_idx in cat_col_idx:
         data_df.iloc[:, col_idx] = data_df.iloc[:, col_idx].fillna('?')
 
+    # TODO: should not be done here but manually:
     train_data = pd.read_csv(train_data_path)
-
     train_data.to_csv(train_data_path, index = False)
 
     ids_test = data_df.pop(id_col_name).to_numpy()
@@ -127,7 +127,7 @@ def preprocess_atom():
     train_data.to_csv(train_data_path, index = False)
 
     ids_test = data_df.pop(id_col_name).to_numpy()
-    fks_test = data_df.pop(fk_col_name).to_numpy()
+    fks_test = data_df.pop(fk_col_name[0]).to_numpy()
     np.save(f'data/atom/ids_test.npy', ids_test)
     np.save(f'data/atom/fks_test.npy', fks_test)
 
@@ -161,9 +161,10 @@ def preprocess_bond(reorder=False):
     train_data.to_csv(train_data_path, index = False)
 
     ids_test = data_df.pop(id_col_name).to_numpy()
-    # fks_test = data_df.pop(fk_col_name).to_numpy()
+    fks_test = np.array([data_df.pop(x).to_numpy() for x in fk_col_name])
+
     np.save(f'data/{info["name"]}/ids_test.npy', ids_test)
-    # np.save(f'data/{info["name"]}/fks_test.npy', fks_test)
+    np.save(f'data/{info["name"]}/fks_test.npy', fks_test)
 
     data_df.to_csv(info['test_path'], index = False)
 
@@ -199,7 +200,7 @@ def preprocess_test():
     train_data.to_csv(train_data_path, index = False)
 
     ids_test = data_df.pop(id_col_name).to_numpy()
-    fks_test = data_df.pop(fk_col_name).to_numpy()
+    fks_test = data_df.pop(fk_col_name[0]).to_numpy()
     np.save(f'data/test/ids_test.npy', ids_test)
     np.save(f'data/test/fks_test.npy', fks_test)
 
@@ -302,6 +303,22 @@ def reindex(cat, num):
 
     return cat_indices, num_indices
 
+def remove_ids(info, column_names):
+    idxs = []
+    if info.get("id_col_idx") != None:
+        idxs.append(info["id_col_idx"])
+        if info.get("fk_col_idx") != None:
+            for i in info["fk_col_idx"]:
+                idxs.append(i)
+    elif info.get("fk_col_idx") != None:
+        for i in info["fk_col_idx"]:
+            idxs.append(i)
+    idxs.sort(reverse=True)
+    for i in idxs:
+        column_names.pop(i)
+
+    return column_names
+
 def process_data(name):
 
     if name == 'news':
@@ -329,14 +346,20 @@ def process_data(name):
     data_path = info['data_path']
     if info['file_type'] == 'csv':
         data_df = pd.read_csv(data_path, header = info['header'])
+        # if info.get("id_col_name"):
+        #     data_df = data_df.drop(info['id_col_name'], axis=1)
 
     elif info['file_type'] == 'xls':
         data_df = pd.read_excel(data_path, sheet_name='Data', header=1)
-        data_df = data_df.drop('ID', axis=1)
+        # if info.get("id_col_name"):
+        #     data_df = data_df.drop(info['id_col_name'], axis=1)
 
     num_data = data_df.shape[0]
 
-    column_names = info['column_names'] if info['column_names'] else data_df.columns.tolist()
+    column_names_ = info['column_names'] if info['column_names'] else data_df.columns.tolist()
+    column_names = column_names_
+    # remove id and foreign key column names
+    column_names = remove_ids(info, column_names)
  
     num_col_idx = info['num_col_idx']
     cat_col_idx = info['cat_col_idx']
@@ -346,7 +369,8 @@ def process_data(name):
 
     if is_cond:
         fk_col_name = info['fk_col_name']
-        fk_train = data_df.pop(fk_col_name).to_numpy()
+        fk_train = np.stack([data_df.pop(col).to_numpy() for col in fk_col_name], axis=-1)
+             
         np.save(f'{save_dir}/fks_train.npy', fk_train)
 
     if id_col_name is not None:
@@ -471,7 +495,7 @@ def process_data(name):
     print('Numerical', X_num_train.shape)
     print('Categorical', X_cat_train.shape)
 
-    info['column_names'] = column_names
+    info['column_names'] = column_names_
     info['train_num'] = train_df.shape[0]
     info['test_num'] = test_df.shape[0]
 

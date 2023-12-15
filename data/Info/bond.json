@@ -11,10 +11,7 @@
     "parent_name": "atom",
     "num_col_idx": [],
     "cat_col_idx": [
-        0,
-        1,
-        2,
-        3
+        2
     ],
     "target_col_idx": [
     ],
