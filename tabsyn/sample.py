@@ -84,7 +84,11 @@ def main(args):
         fks = np.load(f'{curr_dir}/ckpt/{dataname}/{cond_mode}_cond_fks.npy')
         syn_df.insert(info['fk_col_idx'], info['fk_col_name'], fks)
     # add id column
-    syn_df.insert(info['id_col_idx'], info['id_col_name'], range(0, len(syn_df))) 
+    if info.get("fk_col_idx"):
+        id_idx_delta = sum([x < info["id_col_idx"] for x in info["fk_col_idx"]])
+    else:
+        id_idx_delta = 0
+    syn_df.insert(info['id_col_idx'] - id_idx_delta, info['id_col_name'], range(0, len(syn_df))) 
     
     syn_df.to_csv(save_path, index = False)
     
