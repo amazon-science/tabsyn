@@ -15,7 +15,7 @@ conda activate tabsyn
 Install pytorch
 
 ```
-pip install torch torchvision torchaudio
+conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
 ```
 
 Install other dependencies
@@ -30,7 +30,7 @@ Install dependencies for GOGGLE
 pip install  dgl -f https://data.dgl.ai/wheels/cu117/repo.html
 
 pip install torch_geometric
-pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.0.0+cu117.html
+pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.0.1+cu117.html
 ```
 
 Create another environment for the quality metric (package "synthcity")
