@@ -1,4 +1,56 @@
-# Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space [[Paper link]](https://arxiv.org/pdf/2310.09656v1.pdf)
+# (ICLR 2024 Oral) Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space 
+
+<p align="center">
+  <a href="https://github.com/allenai/OLMo/blob/main/LICENSE">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/allenai/OLMo">
+  </a>
+  <a href="https://openreview.net/forum?id=4Ay23yeuz0">
+    <img alt="Openreview" src="https://img.shields.io/badge/review-OpenReview-red">
+  </a>
+  <a href="https://arxiv.org/abs/2310.09656">
+    <img alt="Paper URL" src="https://img.shields.io/badge/arxiv-2310.09656-blue">
+  </a>
+</p>
+
+This repository contains the implementation of the paper:
+> **Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space**  <br>
+> The Twelfth International Conference on Learning Representations (ICLR 2024, Oral Presentation)<br>
+> Hengrui Zhang, Jiani Zhang, Balasubramaniam Srinivasan, Zhengyuan Shen, Xiao Qin, Christos Faloutsos, Huzefa Rangwala, George Karypis <br>
+
+## Introduction
+
+<div align="center">
+  <img src="images/tabsyn_model.jpg" alt="OLMo Logo" width="800" style="margin-left:'auto' margin-right:'auto' display:'block'"/>
+  <br>
+  <br>
+</div>
+TabSyn is a deep generative model for the synthesis of mixed-type tabular data (i.e., continuous/numerical and discrete/categorical). Tabsyn consists of two parts: 1) A Variational AutoEncoder (VAE) that encodes mixed-type of tabular data into the continuous latent space. 2) A score-based diffusion model for learning the densities of the latent embeddings.
+
+###### TabSyn achieves SOTA performance in recovering the ground-truth distribution of tabular data (under five distinct metrics), and has a significantly faster sampling speed than previous diffusion-based methods.
+<div style="display:flex; justify-content:center;">
+    <img src="images/radar.jpg" style="width:235px; margin-right:10px;">
+    <img src="images/nfe1.jpg" style="width:220px;">
+</div>
+
+###### Visualizations of density estimation for signle column and pair-wise correlation.
+<div align="center">
+  <img src="images/density.jpg" alt="OLMo Logo" width="800" style="margin-left:'auto' margin-right:'auto' display:'block'"/>
+  <br>
+  <br>
+</div>
+<div align="center">
+  <img src="images/heat_map.jpg" alt="OLMo Logo" width="800" style="margin-left:'auto' margin-right:'auto' display:'block'"/>
+  <br>
+  <br>
+</div>
+
+<!-- <div align="center">
+  <img src="images/radar.jpg" alt="OLMo Logo" width="800" style="margin-left:'auto' margin-right:'auto' display:'block'"/>
+  <br>
+  <br>
+</div> -->
+
+
 
 
 ## Installing Dependencies
@@ -13,9 +65,13 @@ conda activate tabsyn
 ```
 
 Install pytorch
-
 ```
 pip install torch torchvision torchaudio
+```
+
+or via conda
+```
+conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
 ```
 
 Install other dependencies
@@ -30,7 +86,7 @@ Install dependencies for GOGGLE
 pip install  dgl -f https://data.dgl.ai/wheels/cu117/repo.html
 
 pip install torch_geometric
-pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.0.0+cu117.html
+pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.0.1+cu117.html
 ```
 
 Create another environment for the quality metric (package "synthcity")
@@ -127,6 +183,14 @@ This project is licensed under the Apache-2.0 License.
 
 ## Reference
 We appreciate your citations if you find this repository useful to your research!
+```
+@inproceedings{tabsyn,
+  title={Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space},
+  author={Zhang, Hengrui and Zhang, Jiani and Srinivasan, Balasubramaniam and Shen, Zhengyuan and Qin, Xiao and Faloutsos, Christos and Rangwala, Huzefa and Karypis, George},
+  booktitle={The twelfth International Conference on Learning Representations},
+  year={2024}
+}
+```
 ```
 @article{zhang2023mixed,
   title={Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space},
