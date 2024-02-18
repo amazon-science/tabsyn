@@ -1,8 +1,8 @@
 # (ICLR 2024 Oral) Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space 
 
 <p align="center">
-  <a href="https://github.com/allenai/OLMo/blob/main/LICENSE">
-    <img alt="GitHub License" src="https://img.shields.io/github/license/allenai/OLMo">
+  <a href="https://github.com//]hengruizhang98/tabsyn/blob/main/LICENSE">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/hengruizhang98/tabsyn">
   </a>
   <a href="https://openreview.net/forum?id=4Ay23yeuz0">
     <img alt="Openreview" src="https://img.shields.io/badge/review-OpenReview-red">
@@ -126,7 +126,7 @@ python main.py --dataname [NAME_OF_DATASET] --method [NAME_OF_BASELINE_METHODS] 
 ```
 
 Options of [NAME_OF_DATASET]: adult, default, shoppers, magic, beijing, news
-Options of [NAME_OF_BASELINE_METHODS]: goggle, great, stasy, codi, tabddpm
+Options of [NAME_OF_BASELINE_METHODS]: smote, goggle, great, stasy, codi, tabddpm
 
 For Tabsyn, use the following command for training:
 
@@ -136,7 +136,6 @@ python main.py --dataname [NAME_OF_DATASET] --method vae --mode train
 
 # after the VAE is trained, train the diffusion model
 python main.py --dataname [NAME_OF_DATASET] --method tabsyn --mode train
-
 ```
 
 ## Tabular Data Synthesis
@@ -157,25 +156,41 @@ python main.py --dataname [NAME_OF_DATASET] --method tabsyn --mode sample --save
 The default save path is "synthetic/[NAME_OF_DATASET]/[METHOD_NAME].csv"
 
 ## Evaluation
-We evaluate the quality of synthetic data using metrics from various aspects 
+We evaluate the quality of synthetic data using metrics from various aspects.
 
-Density estimation:
+#### Density estimation of single column and pair-wise correlation ([link](https://docs.sdv.dev/sdmetrics/reports/quality-report/whats-included))
 
 ```
 python eval/eval_density.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
 ```
 
-Alpha Precision and Beta Recall:
+
+#### Alpha Precision and Beta Recall ([paper link](https://arxiv.org/abs/2102.08921))
+- $\alpha$-preicison: the fidelity of synthetic data
+- $\beta$-recall: the diversity of synthetic data
 
 ```
 python eval/eval_quality.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
 ```
 
-Machine Learning Efficiency:
+#### Machine Learning Efficiency
 
 ```
 python eval/eval_mle.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
 ```
+
+#### Pricavy protection: Distance to Closest Record (DCR)
+
+```
+python eval/eval_dcr.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
+```
+
+#### Detection: Classifier Two Sample Tests (C2ST)
+
+```
+python eval/eval_detection.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
+```
+
 
 ## Security
 
