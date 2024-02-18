@@ -13,13 +13,8 @@ def main(args):
     config_path = f'{curr_dir}/configs/{dataname}.toml'
     model_save_path = f'{curr_dir}/ckpt/{dataname}'
     real_data_path = f'data/{dataname}'
-    sample_save_path = f'synthetic/{dataname}'
+    sample_save_path = args.save_path
 
-    print(sample_save_path)
-
-    if not os.path.exists(sample_save_path):
-        os.makedirs(sample_save_path)
-    
     args.train = True
     
     raw_config = src.load_config(config_path)

@@ -180,4 +180,4 @@ def main(args):
     end_time = time.time()
 
     print('Samping time:', end_time-start_time)
-    print('Saving sampled data to {}/codi_{}.csv'.format(sample_save_dir, num))
+    print('Saving sampled data to {}'.format(save_path))

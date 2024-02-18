@@ -150,8 +150,6 @@ def sample(
         torch.load(model_path, map_location="cpu")
     )
 
-    if not os.path.exists(sample_save_path):
-        os.makedirs(sample_save_path)
 
     diffusion = GaussianMultinomialDiffusion(
         K,
@@ -192,5 +190,5 @@ def sample(
 
     print('Sampling time:', end_time - start_time)
 
-    save_path = args.save_path
+    save_path = sample_save_path
     syn_df.to_csv(save_path, index = False)

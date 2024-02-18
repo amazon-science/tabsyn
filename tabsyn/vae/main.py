@@ -85,9 +85,6 @@ def main(args):
     X_train_num, X_test_num = X_num
     X_train_cat, X_test_cat = X_cat
 
-    # X_train_num = torch.tensor(X_train_num).float()
-    # X_train_cat =  torch.tensor(X_train_cat)
-
     X_train_num, X_test_num = torch.tensor(X_train_num).float(), torch.tensor(X_test_num).float()
     X_train_cat, X_test_cat =  torch.tensor(X_train_cat), torch.tensor(X_test_cat)
 
@@ -160,28 +157,6 @@ def main(args):
         cat_loss = curr_loss_multi / curr_count
         kl_loss = curr_loss_kl / curr_count
         
-        # num_loss = np.around(curr_loss_gauss / curr_count, 5)
-        # cat_loss = np.around(curr_loss_multi / curr_count, 5)
-        # kl_loss = np.around(curr_loss_kl / curr_count, 5)
-        
-        train_loss = num_loss + cat_loss
-        scheduler.step(train_loss)
-
-        new_lr = optimizer.param_groups[0]['lr']
-
-        if new_lr != current_lr:
-            current_lr = new_lr
-            print(f"Learning rate updated: {current_lr}")
-            
-        if train_loss < best_train_loss:
-            best_train_loss = train_loss
-            patience = 0
-            torch.save(model.state_dict(), model_save_path)
-        else:
-            patience += 1
-            if patience == 10:
-                if beta > min_beta:
-                    beta = beta * lambd
 
         '''
             Evaluation
@@ -191,9 +166,26 @@ def main(args):
             Recon_X_num, Recon_X_cat, mu_z, std_z = model(X_test_num, X_test_cat)
 
             val_mse_loss, val_ce_loss, val_kl_loss, val_acc = compute_loss(X_test_num, X_test_cat, Recon_X_num, Recon_X_cat, mu_z, std_z)
-            val_loss = val_mse_loss.item() * 0 + val_ce_loss.item()
+            val_loss = val_mse_loss.item() * 0 + val_ce_loss.item()    
 
             scheduler.step(val_loss)
+            new_lr = optimizer.param_groups[0]['lr']
+
+            if new_lr != current_lr:
+                current_lr = new_lr
+                print(f"Learning rate updated: {current_lr}")
+                
+            train_loss = val_loss
+            if train_loss < best_train_loss:
+                best_train_loss = train_loss
+                patience = 0
+                torch.save(model.state_dict(), model_save_path)
+            else:
+                patience += 1
+                if patience == 10:
+                    if beta > min_beta:
+                        beta = beta * lambd
+
 
         # print('epoch: {}, beta = {:.6f}, Train MSE: {:.6f}, Train CE:{:.6f}, Train KL:{:.6f}, Train ACC:{:6f}'.format(epoch, beta, num_loss, cat_loss, kl_loss, train_acc.item()))
         print('epoch: {}, beta = {:.6f}, Train MSE: {:.6f}, Train CE:{:.6f}, Train KL:{:.6f}, Val MSE:{:.6f}, Val CE:{:.6f}, Train ACC:{:6f}, Val ACC:{:6f}'.format(epoch, beta, num_loss, cat_loss, kl_loss, val_mse_loss.item(), val_ce_loss.item(), train_acc.item(), val_acc.item() ))

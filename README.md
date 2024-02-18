@@ -20,7 +20,7 @@ This repository contains the implementation of the paper:
 ## Introduction
 
 <div align="center">
-  <img src="images/tabsyn_model.jpg" alt="OLMo Logo" width="800" style="margin-left:'auto' margin-right:'auto' display:'block'"/>
+  <img src="images/tabsyn_model.jpg" alt="Model Logo" width="800" style="margin-left:'auto' margin-right:'auto' display:'block'"/>
   <br>
   <br>
 </div>
@@ -28,8 +28,8 @@ TabSyn is a deep generative model for the synthesis of mixed-type tabular data (
 
 ###### TabSyn achieves SOTA performance in recovering the ground-truth distribution of tabular data (under five distinct metrics), and has a significantly faster sampling speed than previous diffusion-based methods.
 <div style="display:flex; justify-content:center;">
-    <img src="images/radar.jpg" style="width:235px; margin-right:10px;">
-    <img src="images/nfe1.jpg" style="width:220px;">
+    <img src="images/radar.jpg" style="width:350px; margin-right:50px;">
+    <img src="images/nfe1.jpg" style="width:300px;">
 </div>
 
 ###### Visualizations of density estimation for signle column and pair-wise correlation.
@@ -101,6 +101,8 @@ pip install category_encoders
 
 ## Preparing Datasets
 
+### Using the datasets adopted in the paper
+
 Download raw dataset:
 
 ```
@@ -112,6 +114,8 @@ Process dataset:
 ```
 python process_dataset.py
 ```
+
+### Using your own datasets (TODO)
 
 ## Training Models
 
@@ -153,6 +157,7 @@ python main.py --dataname [NAME_OF_DATASET] --method tabsyn --mode sample --save
 The default save path is "synthetic/[NAME_OF_DATASET]/[METHOD_NAME].csv"
 
 ## Evaluation
+We evaluate the quality of synthetic data using metrics from various aspects 
 
 Density estimation:
 
