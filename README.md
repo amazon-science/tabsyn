@@ -1,8 +1,11 @@
 # (ICLR 2024 Oral) Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space 
 
 <p align="center">
-  <a href="https://github.com//]hengruizhang98/tabsyn/blob/main/LICENSE">
+  <!-- <a href="https://github.com/hengruizhang98/tabsyn/blob/main/LICENSE">
     <img alt="GitHub License" src="https://img.shields.io/github/license/hengruizhang98/tabsyn">
+  </a> -->
+  <a href="https://github.com/hengruizhang98/tabsyn/blob/main/LICENSE">
+    <img alt="GitHub License" src="https://img.shields.io/badge/license-Apache 2.0-green">
   </a>
   <a href="https://openreview.net/forum?id=4Ay23yeuz0">
     <img alt="Openreview" src="https://img.shields.io/badge/review-OpenReview-red">
@@ -115,7 +118,34 @@ Process dataset:
 python process_dataset.py
 ```
 
-### Using your own datasets (TODO)
+### Using your own dataset
+
+First, create a directory for you dataset [NAME_OF_DATASET] in ./data:
+```
+cd data
+mkdir [NAME_OF_DATASET]
+```
+
+Put the tabular data in .csv format in this directory ([NAME_OF_DATASET].csv). **The first row should be the header** indicating the name of each column, and the remaining rows are records.
+
+Then, write a .json file ([NAME_OF_DATASET].json) recording the metadata of the tabular, covering the following information:
+```
+{
+    "name": "[NAME_OF_DATASET]",
+    "task_type": "[NAME_OF_TASK]", # binclass or regression
+    "header": "infer",
+    "column_names": null,
+    "num_col_idx": [LIST],  # list of indices of numerical columns
+    "cat_col_idx": [LIST],  # list of indices of categorical columns
+    "target_col_idx": [list], # list of indices of the target columns (for MLE)
+    "file_type": "csv",
+    "data_path": "data/[NAME_OF_DATASET]/[NAME_OF_DATASET].csv"
+    "test_path": null,
+}
+```
+Put this .json file in the .Info directory.
+
+
 
 ## Training Models
 
