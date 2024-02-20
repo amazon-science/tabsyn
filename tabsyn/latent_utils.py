@@ -67,7 +67,7 @@ def get_input_generate(args):
 
  
 @torch.no_grad()
-def split_num_cat_target(syn_data, info, num_inverse, cat_inverse):
+def split_num_cat_target(syn_data, info, num_inverse, cat_inverse, device):
     task_type = info['task_type']
 
     num_col_idx = info['num_col_idx']
@@ -83,11 +83,12 @@ def split_num_cat_target(syn_data, info, num_inverse, cat_inverse):
         n_cat_feat += len(target_col_idx)
 
   
-    pre_decoder = info['pre_decoder'].cuda()
+    pre_decoder = info['pre_decoder']
     token_dim = info['token_dim']
 
     syn_data = syn_data.reshape(syn_data.shape[0], -1, token_dim)
-    norm_input = pre_decoder(torch.tensor(syn_data).cuda())
+    
+    norm_input = pre_decoder(torch.tensor(syn_data))
     x_hat_num, x_hat_cat = norm_input
 
     syn_cat = []
@@ -149,5 +150,4 @@ def process_invalid_id(syn_cat, min_cat, max_cat):
     syn_cat = np.clip(syn_cat, min_cat, max_cat)
 
     return syn_cat
-
 

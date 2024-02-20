@@ -40,7 +40,7 @@ def main(args):
     x_next = x_next * 2 + mean.to(device)
 
     syn_data = x_next.float().cpu().numpy()
-    syn_num, syn_cat, syn_target = split_num_cat_target(syn_data, info, num_inverse, cat_inverse) 
+    syn_num, syn_cat, syn_target = split_num_cat_target(syn_data, info, num_inverse, cat_inverse, args.device) 
 
     syn_df = recover_data(syn_num, syn_cat, syn_target, info)
 

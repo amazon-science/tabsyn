@@ -3,6 +3,7 @@ from baselines.goggle.main import main as train_goggle
 from baselines.codi.main import main as train_codi
 from baselines.stasy.main import main as train_stasy
 from baselines.tabddpm.main_train import main as train_tabddpm
+from baselines.smote.main import main as train_smote
 
 from baselines.great.sample import main as sample_great
 from baselines.goggle.sample import main as sample_goggle
@@ -127,8 +128,12 @@ def get_args():
     parser.add_argument('--lambda_dis', type=float, default=0.2, help='lambda_dis')
     ################    
 
-    # configs for TabDDIM
+
+    # configs for TabDDPM
     parser.add_argument('--ddim', action = 'store_true', default=False, help='Whether use DDIM sampler')
+
+    # configs for SMOTE
+    parser.add_argument('--cat_encoding', type=str, default='one-hot', help='Encoding method for categorical features')
 
 
     # configs for traing TabSyn's VAE

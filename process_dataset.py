@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import sys
 import json
+import argparse
 
 TYPE_TRANSFORM ={
     'float', np.float32,
@@ -11,6 +12,12 @@ TYPE_TRANSFORM ={
 }
 
 INFO_PATH = 'data/Info'
+
+parser = argparse.ArgumentParser(description='process dataset')
+
+# General configs
+parser.add_argument('--dataname', type=str, default=None, help='Name of dataset.')
+args = parser.parse_args()
 
 def preprocess_beijing():
     with open(f'{INFO_PATH}/beijing.json', 'r') as f:
@@ -61,7 +68,8 @@ def preprocess_news():
     info['cat_col_idx'] = [46, 47]
     info['target_col_idx'] = [45]
     info['data_path'] = data_save_path
-
+    
+    name = 'news'
     with open(f'{INFO_PATH}/{name}.json', 'w') as file:
         json.dump(info, file, indent=4)
 
@@ -332,8 +340,13 @@ def process_data(name):
     print('Cat', cat)
 
 
-
 if __name__ == "__main__":
 
-    for name in ['adult', 'default', 'shoppers', 'magic', 'beijing', 'news']:    
-        process_data(name)
+    if args.dataname:
+        process_data(args.dataname)
+    else:
+        for name in ['adult', 'default', 'shoppers', 'magic', 'beijing', 'news']:    
+            process_data(name)
+
+        
+
