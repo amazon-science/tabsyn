@@ -163,7 +163,7 @@ python main.py --dataname [NAME_OF_DATASET] --method [NAME_OF_BASELINE_METHODS] 
 ```
 
 Options of [NAME_OF_DATASET]: adult, default, shoppers, magic, beijing, news
-Options of [NAME_OF_BASELINE_METHODS]: smote, ctgan, tvae, goggle, great, stasy, codi, tabddpm
+Options of [NAME_OF_BASELINE_METHODS]: smote, goggle, great, stasy, codi, tabddpm
 
 For Tabsyn, use the following command for training:
 
