@@ -20,6 +20,10 @@ This repository contains the implementation of the paper:
 > The Twelfth International Conference on Learning Representations (ICLR 2024, Oral Presentation)<br>
 > Hengrui Zhang, Jiani Zhang, Balasubramaniam Srinivasan, Zhengyuan Shen, Xiao Qin, Christos Faloutsos, Huzefa Rangwala, George Karypis <br>
 
+## Latest Update
+
+- [2024-05-14]：Add demo code for missing value imputation for the target column with a well trained TabSyn.
+
 ## Introduction
 
 <div align="center">
@@ -145,7 +149,10 @@ Then, write a .json file ([NAME_OF_DATASET].json) recording the metadata of the 
 ```
 Put this .json file in the .Info directory.
 
+Finally, run the following command to process the UDF dataset:
+```
 
+```
 
 ## Training Models
 
@@ -220,6 +227,31 @@ python eval/eval_dcr.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --pat
 ```
 python eval/eval_detection.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
 ```
+
+#### Missing Value Imputation for the Target Column
+
+```
+python impute.py --dataname [NAME_OF_DATASET]
+```
+The imputed tale will be saved at impute/[NAME_OF_DATASET]
+
+To evaluate the imputed target column regarding the classification task, use the following command:
+
+ ```
+python eval_impute.py --dataname adult
+```
+
+Currently, TabSyn only supports imputing multiple numerical columns and/or a single categorical column. The demo code only imputes the target column given a dataset, as indicated by the 'target_col_idx' in the dataset metadata JSON file. Below is a basic introduction to our imputation strategy:
+
+- For numerical columns, missing values are replaced with the average values of the corresponding columns in the training set.
+
+- For the categorical column, in each imputation trial, we randomly select from all possible categories with uniform probabilities.
+
+- Next, the masked data is fed into the VAE model to obtain their embeddings.
+
+- When applying the diffusion inpainting method, we remask the corresponding dimensions of the embeddings according to the relative positions of the embeddings and the raw input. For example, if the masked column index for the raw data is 0, and the token dimension is 4, we mask dimensions [0, 1, 2, 3] in their embeddings. Then, we apply the inpainting method illustrated in Eq. 39 to perform diffusion inpainting, and finally, we obtain the imputation result for one trial.
+
+- Since diffusion inpainting is stochastic (and for the categorical column, we sample the category randomly), we need to repeat the imputation algorithm several times (e.g., 50), and take the averaged imputation result as the final result.
 
 
 ## Security
