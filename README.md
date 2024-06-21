@@ -21,8 +21,8 @@ This repository contains the implementation of the paper:
 > Hengrui Zhang, Jiani Zhang, Balasubramaniam Srinivasan, Zhengyuan Shen, Xiao Qin, Christos Faloutsos, Huzefa Rangwala, George Karypis <br>
 
 ## Latest Update
-
-- [2024-05-14]：Add demo code for missing value imputation for the target column with a well trained TabSyn.
+- [2024-06-20]: Disable loading irrelvent packages when training individual models; update the instruction for DCR experiements; fix minor bugs in TabSyn's training script.
+- [2024-05-14]: Add demo code for missing value imputation for the target column with a well trained TabSyn.
 
 ## Introduction
 
@@ -99,8 +99,8 @@ pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -
 Create another environment for the quality metric (package "synthcity")
 
 ```
-conda create -n tabsyn python=3.10
-conda activate tabsyn
+conda create -n synthcity python=3.10
+conda activate synthcity
 
 pip install synthcity
 pip install category_encoders
@@ -221,6 +221,8 @@ python eval/eval_mle.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --pat
 ```
 python eval/eval_dcr.py --dataname [NAME_OF_DATASET] --model [METHOD_NAME] --path [PATH_TO_SYNTHETIC_DATA]
 ```
+
+Note: the optimal DCR score depends on the ratio between #Train and #Holdout (# Test). Ideally, DCR sore should be #Train / (#Train + #Holdout). To let the optimal score be $50\%$, you have to let the training and testing set have the same size. 
 
 #### Detection: Classifier Two Sample Tests (C2ST)
 

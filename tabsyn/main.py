@@ -84,7 +84,7 @@ def main(args):
         scheduler.step(curr_loss)
 
         if curr_loss < best_loss:
-            best_loss = loss.item()
+            best_loss = curr_loss
             patience = 0
             torch.save(model.state_dict(), f'{ckpt_path}/model.pt')
         else:

@@ -1,30 +1,30 @@
-from baselines.great.main import main as train_great
-from baselines.goggle.main import main as train_goggle
-from baselines.codi.main import main as train_codi
-from baselines.stasy.main import main as train_stasy
-from baselines.tabddpm.main_train import main as train_tabddpm
-from baselines.smote.main import main as train_smote
-
-from baselines.great.sample import main as sample_great
-from baselines.goggle.sample import main as sample_goggle
-from baselines.codi.sample import main as sample_codi
-from baselines.stasy.sample import main as sample_stasy
-from baselines.tabddpm.main_sample import main as sample_tabddpm
-
-from tabsyn.vae.main import main as train_vae
-from tabsyn.main import main as train_tabsyn
-from tabsyn.sample import main as sample_tabsyn
-
 import argparse
 import importlib
 
 def execute_function(method, mode):
     if method == 'vae':
         mode = 'train'
+    mode = 'main' if mode == 'train' else 'sample'
 
-    main_fn = eval(f'{mode}_{method}')
+    if method == 'vae':
+        module_name = f"tabsyn.vae.main"
+    elif method == 'tabsyn':
+        module_name = f"tabsyn.{mode}"
+    elif method == 'tabddpm':
+        module_name = f"baselines.tabddpm.main_train" if mode == 'main' else f"baselines.tabddpm.main_sample"
+    else:
+        module_name = f"baselines.{method}.{mode}"
 
-    return main_fn
+    try:
+        train_module = importlib.import_module(module_name)
+        train_function = getattr(train_module, 'main')
+    except ModuleNotFoundError:
+        print(f"Module {module_name} not found.")
+        exit(1)
+    except AttributeError:
+        print(f"Function 'main' not found in module {module_name}.")
+        exit(1)
+    return train_function
 
 def get_args():
     parser = argparse.ArgumentParser(description='Pipeline')
