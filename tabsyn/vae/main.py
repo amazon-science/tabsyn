@@ -144,15 +144,22 @@ def main(args):
         writer.add_scalar('Loss/Val CE', val_ce_loss.item(), epoch)
         writer.add_scalar('Accuracy/Train ACC', train_acc.item(), epoch)
         writer.add_scalar('Accuracy/Val ACC', val_acc.item(), epoch)
+        # Log learning rate and beta
+        writer.add_scalar('HyperParameter/Learning Rate', current_lr, epoch)
+        writer.add_scalar('HyperParameter/Beta', beta, epoch)
 
         # Update learning rate and beta
-        scheduler.step(val_ce_loss.item())
+        ##----------------------------------
+        # replaced val_ce_loss with val_mse_loss
+        ##----------------------------------
+        
+        scheduler.step(val_mse_loss.item())
         new_lr = optimizer.param_groups[0]['lr']
         if new_lr != current_lr:
             current_lr = new_lr
             print(f"Learning rate updated: {current_lr}")
-        if val_ce_loss.item() < best_train_loss:
-            best_train_loss = val_ce_loss.item()
+        if val_mse_loss.item() < best_train_loss:
+            best_train_loss = val_mse_loss.item()
             patience = 0
             torch.save(model.state_dict(), model_save_path)
         else:
@@ -193,10 +200,10 @@ if __name__ == '__main__':
     parser.add_argument('--dataname', type=str, default='adult', help='Name of dataset.')
     parser.add_argument('--gpu', type=int, default=0, help='GPU index.')
     parser.add_argument('--max_beta', type=float, default=1e-2, help='Initial Beta.')
-    parser.add_argument('--min_beta', type=float, default=1e-5, help='Minimum Beta.')
+    parser.add_argument('--min_beta', type=float, default=1e-6, help='Minimum Beta.')
     parser.add_argument('--lambd', type=float, default=0.7, help='Decay of Beta.')
-    parser.add_argument('--num_epochs', type=int, default=6000, help='Number of training epochs.')
-    parser.add_argument('--batch_size', type=int, default=4096, help='Batch size for training.')
+    #parser.add_argument('--num_epochs', type=int, default=6000, help='Number of training epochs.')
+    #parser.add_argument('--batch_size', type=int, default=4096, help='Batch size for training.')
 
     args = parser.parse_args()
 
