@@ -32,7 +32,7 @@ def main(args):
     train_data = train_z
 
 
-    batch_size = 4096
+    batch_size = 256 #512 #4096 # reduce to allow more features ~ columns of training data
     train_loader = DataLoader(
         train_data,
         batch_size = batch_size,
