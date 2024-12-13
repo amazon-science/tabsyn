@@ -57,8 +57,8 @@ def main(args):
     device = args.device
     #num_epochs = args.num_epochs
     #batch_size = args.batch_size
-    num_epochs = 6000 
-    batch_size = 4096
+    num_epochs = 4000 
+    batch_size = 256 #512 #4096 # reduce to allow more features ~ columns of training data
 
     info_path = f'data/{dataname}/info.json'
     with open(info_path, 'r') as f:
