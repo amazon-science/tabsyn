@@ -55,10 +55,11 @@ def main(args):
     min_beta = args.min_beta
     lambd = args.lambd
     device = args.device
+    #device = 'cpu'
     #num_epochs = args.num_epochs
     #batch_size = args.batch_size
     num_epochs = 4000 
-    batch_size = 256 #512 #4096 # reduce to allow more features ~ columns of training data
+    batch_size = 256 #4096 # reduce to allow more features ~ columns of training data
 
     info_path = f'data/{dataname}/info.json'
     with open(info_path, 'r') as f:
@@ -77,15 +78,35 @@ def main(args):
     X_train_num, X_test_num = X_num
     X_train_cat, X_test_cat = X_cat
 
+    # Set to float (32-bit) precision
     X_train_num = torch.tensor(X_train_num).float()
     X_test_num = torch.tensor(X_test_num).float().to(device)
+    
+    # Set to double precision 
+    #X_train_num = torch.tensor(X_train_num).double()
+    #X_test_num = torch.tensor(X_test_num).double().to(device)
+    
+    # Set categorical data and move test data to GPU
     X_train_cat = torch.tensor(X_train_cat)
     X_test_cat = torch.tensor(X_test_cat).to(device)
-
+       
+    # DataLoader for training
     train_data = TabularDataset(X_train_num, X_train_cat)
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=4)
 
-    model = Model_VAE(NUM_LAYERS, d_numerical, categories, D_TOKEN, n_head=N_HEAD, factor=FACTOR, bias=True).to(device)
+    #model = Model_VAE(NUM_LAYERS, d_numerical, categories, D_TOKEN, n_head=N_HEAD, factor=FACTOR, bias=True).to(device)
+    
+    # Initialize model and move to device
+    model = Model_VAE(NUM_LAYERS, d_numerical, categories, D_TOKEN, n_head=N_HEAD, factor=FACTOR, bias=True)
+    model.float() # Set all model parameters, including embeddings, to float32
+    #model.double()  # Set all model parameters, including embeddings, to float64
+    model = model.to(device)  # Move the model to GPU
+    
+    # Validation: Check tensor and model parameter precision 
+    print(X_train_num.dtype)  # Should print torch.float64 if .double() is used
+    print(X_test_num.dtype)   # Should print torch.float64 if .double() is used
+    print(next(model.parameters()).dtype)  # Should print torch.float64 if .double() is used
+    
     optimizer = torch.optim.Adam(model.parameters(), lr=LR, weight_decay=WD)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.95, patience=10, verbose=True)
 
@@ -109,8 +130,9 @@ def main(args):
         for batch_num, batch_cat in pbar:
             model.train()
             optimizer.zero_grad()
-
+            
             batch_num = batch_num.to(device)
+            #batch_num = batch_num.double().to(device)
             batch_cat = batch_cat.to(device)
 
             Recon_X_num, Recon_X_cat, mu_z, std_z = model(batch_num, batch_cat)
@@ -167,7 +189,9 @@ def main(args):
             if patience == 10 and beta > min_beta:
                 beta *= lambd
 
-        print(f'epoch: {epoch}, beta: {beta:.6f}, Train MSE: {num_loss:.6f}, Train CE: {cat_loss:.6f}, Train KL: {kl_loss:.6f}, Val MSE: {val_mse_loss.item():.6f}, Val CE: {val_ce_loss.item():.6f}, Train ACC: {train_acc.item():.6f}, Val ACC: {val_acc.item():.6f}')
+        #print(f'epoch: {epoch}, beta: {beta:.6f}, Train MSE: {num_loss:.6f}, Train CE: {cat_loss:.6f}, Train KL: {kl_loss:.6f}, Val MSE: {val_mse_loss.item():.6f}, Val CE: {val_ce_loss.item():.6f}, Train ACC: {train_acc.item():.6f}, Val ACC: {val_acc.item():.6f}')
+        
+        print(f'epoch: {epoch}, beta: {beta:.9f}, Train MSE: {num_loss:.9f}, Train KL: {kl_loss:.6f}, Val MSE: {val_mse_loss.item():.9f}')
 
     end_time = time.time()
     print(f'Training time: {(end_time - start_time) / 60:.4f} mins')
@@ -200,7 +224,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataname', type=str, default='adult', help='Name of dataset.')
     parser.add_argument('--gpu', type=int, default=0, help='GPU index.')
     parser.add_argument('--max_beta', type=float, default=1e-2, help='Initial Beta.')
-    parser.add_argument('--min_beta', type=float, default=1e-6, help='Minimum Beta.')
+    parser.add_argument('--min_beta', type=float, default=1e-5, help='Minimum Beta.')
     parser.add_argument('--lambd', type=float, default=0.7, help='Decay of Beta.')
     #parser.add_argument('--num_epochs', type=int, default=6000, help='Number of training epochs.')
     #parser.add_argument('--batch_size', type=int, default=4096, help='Batch size for training.')
@@ -212,3 +236,4 @@ if __name__ == '__main__':
         args.device = 'cuda:{}'.format(args.gpu)
     else:
         args.device = 'cpu'
+    
