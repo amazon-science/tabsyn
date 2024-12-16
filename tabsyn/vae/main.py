@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.tensorboard import SummaryWriter  # Added for TensorBoard
 
+from torch.utils.data import TensorDataset
+
 import argparse
 import warnings
 import os
@@ -58,8 +60,10 @@ def main(args):
     #device = 'cpu'
     #num_epochs = args.num_epochs
     #batch_size = args.batch_size
-    num_epochs = 4000 
-    batch_size = 256 #4096 # reduce to allow more features ~ columns of training data
+    num_epochs = 2000 
+    batch_size = 512  # try reduce to allow more columns of training data, 
+                      # much more sensitive to number of features/columns i.e. scales quadratically 
+                    
 
     info_path = f'data/{dataname}/info.json'
     with open(info_path, 'r') as f:
@@ -131,8 +135,8 @@ def main(args):
             model.train()
             optimizer.zero_grad()
             
-            batch_num = batch_num.to(device)
-            #batch_num = batch_num.double().to(device)
+            batch_num = batch_num.to(device) # use float32
+            #batch_num = batch_num.double().to(device) # use float64
             batch_cat = batch_cat.to(device)
 
             Recon_X_num, Recon_X_cat, mu_z, std_z = model(batch_num, batch_cat)
@@ -196,6 +200,20 @@ def main(args):
     end_time = time.time()
     print(f'Training time: {(end_time - start_time) / 60:.4f} mins')
 
+    ###################################################################
+    # Save model and latent embeddings (batch version for large datasets) 
+    ###################################################################
+       
+    #from torch.utils.data import TensorDataset
+    
+    # Create a DataLoader for the training data
+    batch_size = 512  # Adjust batch size based on GPU memory availability
+    train_dataset = TensorDataset(X_train_num, X_train_cat)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
+    
+    # Prepare to save latent embeddings
+    all_latent_embeddings = []
+
     # Saving latent embeddings
     with torch.no_grad():
         pre_encoder = Encoder_model(NUM_LAYERS, d_numerical, categories, D_TOKEN, n_head=N_HEAD, factor=FACTOR).to(device)
@@ -207,14 +225,26 @@ def main(args):
         torch.save(pre_encoder.state_dict(), encoder_save_path)
         torch.save(pre_decoder.state_dict(), decoder_save_path)
 
-        X_train_num = X_train_num.to(device)
-        X_train_cat = X_train_cat.to(device)
+        #X_train_num = X_train_num.to(device)
+        #X_train_cat = X_train_cat.to(device)
+        
+        print('Successfully saved the VAE the model!')
+        
+        print(f'Finished training VAE - attempting to save latent embeddings with batch_size : {batch_size :.0f}')
 
-        print('Successfully load and save the model!')
+        for batch_num, batch_cat in train_loader:
+                batch_num = batch_num.to(device)
+                batch_cat = batch_cat.to(device)
+        
+                # Encode batch-wise
+                latent_embedding = pre_encoder(batch_num, batch_cat).detach().cpu().numpy()
+                all_latent_embeddings.append(latent_embedding)
 
-        train_z = pre_encoder(X_train_num, X_train_cat).detach().cpu().numpy()
+        # Concatenate all latent embeddings into a single array
+        train_z = np.concatenate(all_latent_embeddings, axis=0)
+        
+        # Save latent embeddings to disk
         np.save(f'{ckpt_dir}/train_z.npy', train_z)
-
         print('Successfully save pretrained embeddings in disk!')
 
     writer.close()  # Close TensorBoard writer
