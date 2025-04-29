@@ -151,7 +151,7 @@ Put this .json file in the .Info directory.
 
 Finally, run the following command to process the UDF dataset:
 ```
-
+python process_dataset.py --dataname [NAME_OF_DATASET]
 ```
 
 ## Training Models
