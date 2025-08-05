@@ -26,7 +26,10 @@ def main(args):
     
     model = Model(denoise_fn = denoise_fn, hid_dim = train_z.shape[1]).to(device)
 
-    model.load_state_dict(torch.load(f'{ckpt_path}/model.pt'))
+    if device == 'cpu':
+        model.load_state_dict(torch.load(f'{ckpt_path}/model.pt', map_location='cpu'))
+    else:
+        model.load_state_dict(torch.load(f'{ckpt_path}/model.pt'))
 
     '''
         Generating samples    
@@ -36,7 +39,7 @@ def main(args):
     num_samples = train_z.shape[0]
     sample_dim = in_dim
 
-    x_next = sample(model.denoise_fn_D, num_samples, sample_dim)
+    x_next = sample(model.denoise_fn_D, num_samples, sample_dim, device=device)
     x_next = x_next * 2 + mean.to(device)
 
     syn_data = x_next.float().cpu().numpy()
