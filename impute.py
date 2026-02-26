@@ -1,3 +1,9 @@
+"""
+This is the working version of the impute.py script which is used to impute missing data
+
+Place it in the TabSyn directory on your computer from which you run that repo
+
+"""
 import os
 import numpy as np
 import torch
@@ -18,6 +24,13 @@ parser = argparse.ArgumentParser(description='Missing Value Imputation for the T
 
 parser.add_argument('--dataname', type=str, default='adult', help='Name of dataset.')
 parser.add_argument('--gpu', type=int, default=0, help='GPU index.')
+# Add an argument for epochs - this is irrelevant and misleading !!!
+#parser.add_argument('--epoch', type=int, default=200, help='Number of denoising epochs (default: 200)')
+# Modify the argument parser to include num_steps
+parser.add_argument('--num_steps', type=int, default=200, help='Number of steps for the reverse diffusion process')
+parser.add_argument('--num_samples', type=int, default=100, help='Number of imputed datasets to generate')
+
+
 
 args = parser.parse_args()
 
@@ -65,7 +78,7 @@ def step(net, num_steps, i, t_cur, t_next, x_next):
 if __name__ == '__main__':
     dataname = args.dataname
     device = args.device
-    epoch = args.epoch
+    #epoch = args.epoch
     mask_cols = args.cols = [0]
     
     num_trials = 1
@@ -96,8 +109,9 @@ if __name__ == '__main__':
     encoder_save_path = f'{ckpt_dir}/encoder.pt'
     decoder_save_path = f'{ckpt_dir}/decoder.pt'
 
-    for trial in range(50):
-
+    #for trial in range(50):
+    for trial in range(args.num_samples):
+        
         X_num, X_cat, categories, d_numerical = preprocess(data_dir, task_type = info['task_type'])
 
 
@@ -173,8 +187,11 @@ if __name__ == '__main__':
         mask[mask_list] = True
 
         ###########################
-
-        num_steps = 50
+        
+        # Use the user-defined num_steps in the diffusion process
+        num_steps = args.num_steps
+        
+        #num_steps = 50
         N = 20
         net = model.denoise_fn_D
 

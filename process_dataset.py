@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import argparse
+import time
 
 TYPE_TRANSFORM ={
     'float', np.float32,
@@ -112,11 +113,33 @@ def get_column_name_mapping(data_df, num_col_idx, cat_col_idx, target_col_idx, c
 
 
 def train_val_test_split(data_df, cat_columns, num_train = 0, num_test = 0):
+    """
+    Splits a DataFrame into train and test sets, ensuring the categorical column(s) 
+    have all categories represented in the train set.
+    
+    The seed is dynamically generated based on the clock time, ensuring randomness.
+    
+    Parameters:
+        data_df (pd.DataFrame): The input DataFrame.
+        cat_columns (list): List of categorical column names for validation.
+        num_train (int): Number of samples for training.
+        num_test (int): Number of samples for testing.
+    
+    Returns:
+        pd.DataFrame: Train set
+        pd.DataFrame: Test set
+        int: The random seed used for the split
+    """
+    
     total_num = data_df.shape[0]
     idx = np.arange(total_num)
 
-
-    seed = 1234
+    #seed = 1234
+    
+    # ensure a different train test split each time the code is run
+    # Generate a random 4-digit seed based on the current time
+    seed = int(str(int(time.time()))[-4:])  # Extracts the last 4 digits of the current timestamp
+    print(f"Random Seed Used: {seed}")
 
     while True:
         np.random.seed(seed)
